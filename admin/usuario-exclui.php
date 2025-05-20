@@ -7,6 +7,8 @@ use Microblog\Models\Categoria;
 use Microblog\Services\UsuarioServico;
 
 ControleDeAcesso::exigirLogin();
+ControleDeAcesso::exigirAdmin();
+
 $usuarioServico = new UsuarioServico();
 
 
