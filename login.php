@@ -2,6 +2,7 @@
 
 use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
+use Microblog\Services\UsuarioServico;
 
 require_once "vendor/autoload.php";
 
@@ -20,7 +21,7 @@ if( isset($_GET["campos_obrigatorios"]) ){
 if (isset($_POST['entrar'])) {
 
     $email = Utils::sanitizar($_POST['email'], 'email');
-    $senha = Utils::sanitizar($_POST['senha']);
+    $senha = ($_POST['senha']); // não precisa sanitixar, pois será codigicada/verificada
 
     // Verificando campos obrigatórios
     if (empty($email) || empty($senha)) {
@@ -29,6 +30,30 @@ if (isset($_POST['entrar'])) {
     }
 
     /* Processo de busca do usuário pelo e-mail e login na área administrativa */
+    try{
+        // Buscar o usuário através do e-mail informado
+        $usuarioServico = new UsuarioServico();
+        $usuario = $usuarioServico->buscarPorEmail($email);
+
+        //Se não existir usuário com o e-mail informado, 
+        //mantem na página login e apresenta mensagem 
+        if(!$usuario){
+            header("location:login.php?dados_incorretos");
+            exit;
+        }
+
+        // Se o usuário foi encontrado, verifica a senha digitada 
+        if($usuario && password_verify($senha, $usuario['senha'])){
+            echo "senhas iguais, pode logar!";
+        } else {
+            echo "senhas diferentes, você não deveria estar aqui!";
+        }
+
+    } catch (Throwable $erro) {
+        Utils::registrarLog($erro);
+        header("location:login.php?erro");
+        exit;
+    }
 
     
     
