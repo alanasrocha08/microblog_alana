@@ -22,14 +22,16 @@ class NoticiaServico
 
     public function listarTodos(TipoUsuario $tipoUsuario, int $usuarioId): array
     {
-
+        //Se for um usuário ADMIN
         if ($tipoUsuario === TipoUsuario::ADMIN) {
+            //Usa esse SELECT (sem WHERE), para carregar TODAS as notícias 
             $sql = "SELECT noticias.id, noticias.titulo, 
                     noticias.data, usuarios.nome AS autor, noticias.destaque
                     FROM noticias INNER JOIN usuarios
                     ON noticias.usuario_id = usuarios.id
                     ORDER BY data DESC";
         } else {
+            //Senão, usa esse SELECT (com WHERE) para carregar as notícias Ó DELE/DELA (EDITOR)
             $sql = "SELECT id, titulo, data, destaque
                     FROM noticias WHERE usuario_id = :usuario_id
                     ORDER BY data DESC";
